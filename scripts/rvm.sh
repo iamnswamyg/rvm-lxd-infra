@@ -24,10 +24,11 @@ echo "gem: --no-document" > ~/.gemrc
 gem install bundler
 gem update --system 3.4.12
 gem env home
-gem install rails 
 ~/.rbenv/bin/rbenv rehash
-rails -v
 cd ~/.rbenv
 git pull
+gem install rails 
+rails -v
+~/.rbenv/bin/rbenv rehash
 
 

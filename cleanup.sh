@@ -2,6 +2,7 @@
 #!/bin/bash
 
 SCRIPT_PREFIX="rvm"
+STORAGE_PATH="/data/lxd/"${SCRIPT_PREFIX}
 # Get the list of running containers
 containers=$(lxc list -c ns --format=json | jq -r '.[] | .name')
 
@@ -37,11 +38,19 @@ for network in $networks; do
     fi
 done
 
+if  [ -d ${STORAGE_PATH} ]; then
+    sudo rm -rf ${STORAGE_PATH}
+fi
 # Get the list of storage pools
 pools=$(lxc storage list --format=json | jq -r '.[] | .name')
 # Loop through the profiles and delete them
 for pool in $pools; do
     if echo "$pool" | grep -q "${SCRIPT_PREFIX}"; then
+        if lxc storage list --format=json | jq -c "map(.name | select(\"${SCRIPT_PREFIX}\"))" | grep -q "${SCRIPT_PREFIX}"; then
+            echo "deleting btfs ${SCRIPT_PREFIX}" 
+            lxd sql global "DELETE FROM storage_volumes WHERE name='${SCRIPT_PREFIX}'"
+        fi
+
         echo "deleting pool: $pool"
         lxc storage delete "$pool"
     fi

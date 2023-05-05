@@ -16,3 +16,4 @@ done
 
 echo "listing the images"
 lxc image list --format=json | jq -r '.[] | .aliases' | jq -r '.[].name' 
+lxc storage list --format=json | jq -r '.[] | .name'

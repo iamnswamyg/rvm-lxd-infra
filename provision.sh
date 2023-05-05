@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_PREFIX="rvm"
-OS=images:ubuntu/jammy
+OS=docker
 STORAGE_PATH="/data/lxd/"${SCRIPT_PREFIX}
 IP="10.120.11"
 IFACE="eth0"
@@ -29,7 +29,7 @@ if ! [ -d ${STORAGE_PATH} ]; then
 fi
 
 # creating the pool
-lxc storage create ${POOL} dir source=${STORAGE_PATH}
+lxc storage create ${POOL} btrfs 
 
 #create network bridge
 lxc network create ${SCRIPT_BRIDGE_NAME} ipv6.address=none ipv4.address=${IP_SUBNET} ipv4.nat=true
@@ -56,12 +56,18 @@ lxc init ${IMAGE} ${NAME} --profile ${SCRIPT_PROFILE_NAME}
 lxc network attach ${SCRIPT_BRIDGE_NAME} ${NAME} ${IFACE}
 lxc config device set ${NAME} ${IFACE} ipv4.address ${IP}.2
 lxc start ${NAME} 
+
+lxc storage volume create ${POOL} ${NAME}
+lxc config device add ${NAME} ${POOL} disk pool=${POOL} source=${NAME} path=${STORAGE_PATH}
 sudo lxc config device add ${NAME} ${NAME}-script-share disk source=${PWD}/scripts path=/lxd
+lxc config set ${NAME} security.nesting=true security.syscalls.intercept.mknod=true security.syscalls.intercept.setxattr=true
+
 sudo lxc exec ${NAME} -- /bin/bash /lxd/${NAME}.sh
-# save container as image
+#save container as image
 lxc stop ${NAME}
 lxc publish ${NAME} --alias ${NAME} 
 lxc start ${NAME}
+
 
 
 
