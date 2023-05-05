@@ -1,1 +1,1 @@
-# salt-rvm-lxd-infra
+# rvm-lxd-infra
