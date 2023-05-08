@@ -17,7 +17,7 @@ source ~/.bashrc
 ~/.rbenv/bin/rbenv install 3.2.2
 ~/.rbenv/bin/rbenv global 3.2.2
 export PATH="$HOME/.rbenv/versions/3.2.2/bin:$PATH"
-/root/.rbenv/versions/3.2.2/bin/ruby -v
+$HOME/.rbenv/versions/3.2.2/bin/ruby -v
 rbenv global 3.2.2
 ruby -v
 echo "gem: --no-document" > ~/.gemrc
